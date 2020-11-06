@@ -19,13 +19,14 @@ class DeviceApps {
   /// It is similar to what a launcher will display
   static Future<List<Application>> getInstalledApplications(
       {bool includeSystemApps: false,
-      bool includeAppIcons: false,
-      bool onlyAppsWithLaunchIntent: false}) async {
+        bool includeAppIcons: false,
+        bool onlyAppsWithLaunchIntent: false}) async {
     return _channel.invokeMethod('getInstalledApps', <String, bool>{
       'system_apps': includeSystemApps,
       'include_app_icons': includeAppIcons,
       'only_apps_with_launch_intent': onlyAppsWithLaunchIntent
     }).then((Object apps) {
+
       if (apps != null && apps is List) {
         List<Application> list = List<Application>();
         for (Object app in apps) {
@@ -138,16 +139,16 @@ class Application {
   /// The information may come from the application itself or the system
   final ApplicationCategory category;
 
+  final String _icon;
+
+  Uint8List get icon => base64.decode(_icon);
+
   factory Application._(Map<Object, Object> map) {
     if (map == null || map.length == 0) {
       throw Exception('The map can not be null!');
     }
 
-    if (map.containsKey('app_icon')) {
-      return ApplicationWithIcon._fromMap(map);
-    } else {
-      return Application._fromMap(map);
-    }
+    return Application._fromMap(map);
   }
 
   Application._fromMap(Map<Object, Object> map)
@@ -160,6 +161,8 @@ class Application {
         assert(map['system_app'] != null),
         assert(map['install_time'] != null),
         assert(map['update_time'] != null),
+        assert(map['app_icon'] != null),
+        _icon = map['app_icon'],
         appName = map['app_name'],
         apkFilePath = map['apk_file_path'],
         packageName = map['package_name'],
@@ -198,6 +201,7 @@ class Application {
     }
   }
 
+
   @override
   String toString() {
     return 'Application{'
@@ -211,6 +215,22 @@ class Application {
         'installTimeMillis: $installTimeMillis, '
         'updateTimeMillis: $updateTimeMillis, '
         'category: $category}';
+  }
+
+  Map<String, String> toMap() {
+    return
+      {
+        "appName": "$appName",
+        "apkFilePath": "$apkFilePath",
+        "packageName": "$packageName",
+        "versionName": "$versionName",
+        "versionCode": "$versionCode",
+        "dataDir": "$dataDir",
+        "systemApp": "$systemApp",
+        "installTimeMillis": "$installTimeMillis",
+        "updateTimeMillis": "$updateTimeMillis",
+        "category": "$category",
+        "icon": "$_icon"};
   }
 }
 
@@ -249,23 +269,4 @@ enum ApplicationCategory {
 
   /// Value when category is undefined.
   undefined
-}
-
-/// If the [includeAppIcons] attribute is provided, this class will be used.
-/// To display an image simply use the [Image.memory] widget.
-/// Example:
-///
-/// ```
-/// Image.memory(app.icon)
-/// ```
-class ApplicationWithIcon extends Application {
-  final String _icon;
-
-  ApplicationWithIcon._fromMap(Map<Object, Object> map)
-      : assert(map['app_icon'] != null),
-        _icon = map['app_icon'],
-        super._fromMap(map);
-
-  /// Icon of the application to use in conjunction with [Image.memory]
-  Uint8List get icon => base64.decode(_icon);
 }
