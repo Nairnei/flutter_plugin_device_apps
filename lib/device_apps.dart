@@ -105,35 +105,35 @@ class DeviceApps {
 /// Depending on the Android version, some attributes may not be available
 class Application {
   /// Displayable name of the application
-  final String appName;
+  final dynamic appName;
 
   /// Full path to the base APK for this application
-  final String apkFilePath;
+  final dynamic apkFilePath;
 
   /// Name of the package
-  final String packageName;
+  final dynamic packageName;
 
   /// Public name of the application (eg: 1.0.0)
   /// The version name of this package, as specified by the <manifest> tag's
   /// `versionName` attribute
-  final String versionName;
+  final dynamic versionName;
 
   /// Unique version id for the application
-  final int versionCode;
+  final dynamic versionCode;
 
   /// Full path to the default directory assigned to the package for its
   /// persistent data
-  final String dataDir;
+  final dynamic dataDir;
 
   /// Whether the application is installed in the device's system image
   /// An application downloaded by the user won't be a system app
-  final bool systemApp;
+  final dynamic systemApp;
 
   /// The time at which the app was first installed
-  final int installTimeMillis;
+  final dynamic installTimeMillis;
 
   /// The time at which the app was last updated
-  final int updateTimeMillis;
+  final dynamic updateTimeMillis;
 
   /// The category of this application
   /// The information may come from the application itself or the system
@@ -174,6 +174,45 @@ class Application {
         updateTimeMillis = map['update_time'],
         category = _parseCategory(map['category']);
 
+  Application.fromMap(Map<Object, Object> map)
+      : assert(map['app_name'] != null),
+        assert(map['apk_file_path'] != null),
+        assert(map['package_name'] != null),
+        assert(map['version_name'] != null),
+        assert(map['version_code'] != null),
+        assert(map['data_dir'] != null),
+        assert(map['system_app'] != null),
+        assert(map['install_time'] != null),
+        assert(map['update_time'] != null),
+        assert(map['app_icon'] != null),
+        _icon = map['app_icon'],
+        appName = map['app_name'],
+        apkFilePath = map['apk_file_path'],
+        packageName = map['package_name'],
+        versionName = map['version_name'],
+        versionCode = map['version_code'],
+        dataDir = map['data_dir'],
+        systemApp = map['system_app'],
+        installTimeMillis = map['install_time'],
+        updateTimeMillis = map['update_time'],
+        category = _parseCategory(map['category']);
+
+  Map<String, String> toMap() {
+    return
+      {
+        "app_name": "$appName",
+        "apk_file_path": "$apkFilePath",
+        "package_name": "$packageName",
+        "version_name": "$versionName",
+        "version_code": "$versionCode",
+        "data_dir": "$dataDir",
+        "system_app": "$systemApp",
+        "install_time": "$installTimeMillis",
+        "update_time": "$updateTimeMillis",
+        "category": "$category",
+        "app_icon": "$_icon"};
+  }
+
   /// Mapping of Android categories
   /// [https://developer.android.com/reference/kotlin/android/content/pm/ApplicationInfo]
   /// [category] is null on Android < 26
@@ -203,7 +242,7 @@ class Application {
 
 
   @override
-  String toString() {
+  String  toString() {
     return 'Application{'
         'appName: $appName, '
         'apkFilePath: $apkFilePath, '
@@ -217,21 +256,7 @@ class Application {
         'category: $category}';
   }
 
-  Map<String, String> toMap() {
-    return
-      {
-        "appName": "$appName",
-        "apkFilePath": "$apkFilePath",
-        "packageName": "$packageName",
-        "versionName": "$versionName",
-        "versionCode": "$versionCode",
-        "dataDir": "$dataDir",
-        "systemApp": "$systemApp",
-        "installTimeMillis": "$installTimeMillis",
-        "updateTimeMillis": "$updateTimeMillis",
-        "category": "$category",
-        "icon": "$_icon"};
-  }
+
 }
 
 /// A category provided by the system (Only supported with Android 26+)
