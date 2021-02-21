@@ -99,6 +99,11 @@ class DeviceApps {
     return await _channel
         .invokeMethod('openApp', <String, String>{'package_name': packageName});
   }
+  static Future<bool> openCamera() async {
+
+    return await _channel
+        .invokeMethod('openCamera', <String, String>{});
+  }
 }
 
 /// An application installed on the device

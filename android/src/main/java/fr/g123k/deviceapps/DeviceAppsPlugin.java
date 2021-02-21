@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
 
@@ -37,6 +38,8 @@ import io.flutter.view.FlutterNativeView;
 
 import static fr.g123k.deviceapps.utils.Base64Utils.encodeToBase64;
 import static fr.g123k.deviceapps.utils.DrawableUtils.getBitmapFromDrawable;
+
+
 
 /**
  * DeviceAppsPlugin
@@ -107,6 +110,13 @@ public class DeviceAppsPlugin implements
                     result.success(openApp(packageName));
                 }
                 break;
+
+            case "openCamera":
+                openCamera();
+
+                break;
+
+
             default:
                 result.notImplemented();
         }
@@ -147,10 +157,15 @@ public class DeviceAppsPlugin implements
         return installedApps;
     }
 
+    private void openCamera() {
+        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+
     private boolean openApp(@NonNull String packageName) {
         Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
-
-        // Null pointer check in case package name was not found
         if (launchIntent != null) {
             context.startActivity(launchIntent);
             return true;
